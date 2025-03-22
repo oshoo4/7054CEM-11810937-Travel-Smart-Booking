@@ -14,13 +14,17 @@ builder.Services.AddLogging();
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<TravelSmartContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("TravelSmartDatabase"))
-);
+{
+    var dbPath = Path.Join(builder.Environment.ContentRootPath, "TravelSmart.db");
+    options.UseSqlite($"Data Source={dbPath}");
+});
+// builder.Services.AddDbContext<TravelSmartContext>(options =>
+//     options.UseSqlite(builder.Configuration.GetConnectionString("TravelSmartDatabase"))
+// );
 
 builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-builder.Services.AddScoped<IBookingFacade, BookingFacade>();
-builder.Services.AddScoped<IPackageFactory, PackageFactory>();
+// builder.Services.AddScoped<IBookingFacade, BookingFacade>();
 
 builder.Services.AddTransient<
     IConfirmationSenderStrategyFactory,
@@ -28,6 +32,10 @@ builder.Services.AddTransient<
 >();
 builder.Services.AddTransient<IConfirmationSenderStrategy, EmailConfirmationSenderStrategy>();
 builder.Services.AddTransient<IConfirmationSenderStrategy, SmsConfirmationSenderStrategy>();
+
+builder.Services.AddScoped<IPackageFactory, PackageFactory>();
+
+
 
 var app = builder.Build();
 
@@ -46,7 +54,7 @@ app.UseStaticFiles();
 app.MapControllers();
 
 app.MapGet(
-    "/index.html",
+    "/",
     async context =>
     {
         await context.Response.SendFileAsync(

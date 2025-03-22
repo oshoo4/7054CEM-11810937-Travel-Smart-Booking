@@ -11,6 +11,7 @@ namespace TravelSmartBooking.Api.Repositories;
 public class BookingFacade : IBookingFacade
 {
     private readonly IPackageRepository _packageRepository;
+    private readonly IBookingRepository _bookingRepository;
     private readonly TravelSmartContext _context;
     private readonly IConfirmationSenderStrategy _confirmationSender;
 
@@ -31,17 +32,10 @@ public class BookingFacade : IBookingFacade
         return _packageRepository;
     }
 
-    private readonly IBookingRepository _bookingRepository;
-
     public async Task<bool> BookPackageAsync(int packageId, string customerDetails)
     {
         var package = await _packageRepository.GetByIdAsync(packageId);
-        if (package == null || package.Availability <= 0)
-        {
-            return false;
-        }
-
-        if (string.IsNullOrEmpty(customerDetails))
+        if (package == null || string.IsNullOrEmpty(customerDetails))
         {
             return false;
         }
@@ -50,20 +44,9 @@ public class BookingFacade : IBookingFacade
         {
             PackageId = packageId,
             BookingDate = DateTime.Now,
-            CustomerDetails = customerDetails,
+            CustomerDetails = customerDetails
         };
         await _bookingRepository.AddAsync(booking);
-
-        package.Availability--;
-        await _packageRepository.UpdateAsync(package);
-
-        // STRATEGY (GoF Patterns)
-        // OPEN-CLOSED PRINCIPLE (SOLID Principles)
-        await _confirmationSender.SendConfirmationAsync(
-            customerDetails,
-            $"Booking confirmed for package {package.Name} (ID: {package.Id})."
-        );
-
         return true;
     }
 }

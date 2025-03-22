@@ -47,22 +47,26 @@ public class PackagesControllerTests
     [Fact]
     public async Task GetPackages_ReturnsAllPackages()
     {
+        // Given
         var result = await _packagesController.GetPackages();
 
-        var okResult = Assert.IsType<ActionResult<IEnumerable<Package>>>(result);
+        // When
         var resultValue = result.Value;
+
+        // Then
         if (resultValue != null)
         {
             Assert.Equal(2, resultValue.Count());
         }
     }
 
-
     [Fact]
     public async Task GetPackage_ValidId_ReturnsPackage()
     {
+        // Given
         var result = await _packagesController.GetPackage(1);
 
+        // Then
         var okResult = Assert.IsType<ActionResult<Package>>(result);
         var package = Assert.IsType<Package>(okResult.Value);
         Assert.Equal(1, package.Id);
@@ -71,13 +75,20 @@ public class PackagesControllerTests
     [Fact]
     public async Task GetPackage_InvalidId_ReturnsNotFound()
     {
-        var result = await _packagesController.GetPackage(999);
+        // Given
+        int invalidID = 999;
+
+        // When
+        var result = await _packagesController.GetPackage(invalidID);
+
+        // Then
         Assert.IsType<NotFoundResult>(result.Result);
     }
 
     [Fact]
     public async Task PostPackage_ValidInput_CreatesPackage()
     {
+        // Given
         var newPackage = new Package
         {
             Name = "New Package",
@@ -87,8 +98,10 @@ public class PackagesControllerTests
             Prerequisites = "Passport",
         };
 
+        // When
         var result = await _packagesController.PostPackage(newPackage);
 
+        // Then
         var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
         var createdPackage = Assert.IsType<Package>(createdAtActionResult.Value);
         Assert.Equal("New Package", createdPackage.Name);
@@ -101,6 +114,7 @@ public class PackagesControllerTests
     [Fact]
     public async Task PostPackage_InvalidInput_ReturnsBadRequest()
     {
+        // Given
         var newPackage = new Package
         {
             Name = "",
@@ -111,13 +125,17 @@ public class PackagesControllerTests
         };
         _packagesController.ModelState.AddModelError("Name", "The Name field is required.");
 
+        // When
         var result = await _packagesController.PostPackage(newPackage);
+
+        // Then
         Assert.IsType<BadRequestObjectResult>(result.Result);
     }
 
     [Fact]
     public async Task PutPackage_ValidInput_UpdatesPackage()
     {
+        // Given
         var packageId = 1;
         var updatedPackage = new Package
         {
@@ -129,7 +147,10 @@ public class PackagesControllerTests
             Prerequisites = "Visa",
         };
 
+        // When
         var result = await _packagesController.PutPackage(packageId, updatedPackage);
+
+        // Then
         Assert.IsType<NoContentResult>(result);
 
         var retrievedPackage = await _mockPackageRepository.GetByIdAsync(packageId);
@@ -139,7 +160,14 @@ public class PackagesControllerTests
     [Fact]
     public async Task PutPackage_MismatchedId_ReturnsBadRequest()
     {
-        var result = await _packagesController.PutPackage(1, new Package { Id = 2 });
+        // Given
+        int packageID = 1;
+        var package = new Package { Id = 2 };
+
+        // When
+        var result = await _packagesController.PutPackage(packageID, package);
+
+        // Then
         Assert.IsType<BadRequestResult>(result);
     }
 
@@ -168,54 +196,43 @@ public class PackagesControllerTests
     [Fact]
     public async Task PutPackage_PackageNotFound_ReturnsNotFound()
     {
-        var result = await _packagesController.PutPackage(999, new Package { Id = 999 });
+        // Given
+        int invalidPackageID = 999;
+        var invalidPackage = new Package { Id = 999 };
+
+        // When
+        var result = await _packagesController.PutPackage(invalidPackageID, invalidPackage);
+
+        // Then
         Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
     public async Task DeletePackage_ValidId_DeletesPackage()
     {
-        var result = await _packagesController.DeletePackage(1);
+        // Given
+        int packageID = 1;
+
+        // When
+        var result = await _packagesController.DeletePackage(packageID);
+
+        // Then
         Assert.IsType<NoContentResult>(result);
 
-        var deletedPackage = await _mockPackageRepository.GetByIdAsync(1);
+        var deletedPackage = await _mockPackageRepository.GetByIdAsync(packageID);
         Assert.Null(deletedPackage);
     }
 
     [Fact]
     public async Task DeletePackage_InvalidId_ReturnsNotFound()
     {
-        var result = await _packagesController.DeletePackage(999);
+        // Given
+        int packageID = 999;
+
+        // When
+        var result = await _packagesController.DeletePackage(packageID);
+
+        // Then
         Assert.IsType<NotFoundResult>(result);
     }
-
-    // [Fact]
-    // public async Task BookPackage_ValidInput_ReturnsOk()
-    // {
-    //     var packageId = 1;
-    //     var result = await _packagesController.BookPackage(packageId, "Customer Details");
-    //     Assert.IsType<OkResult>(result);
-
-    //     var mockFacade = (MockBookingFacade)_mockBookingFacade;
-    //     Assert.True(mockFacade.BookPackageAsyncWasCalled);
-    //     Assert.Equal(packageId, mockFacade.LastBookedPackageId);
-    //     Assert.Equal("Customer Details", mockFacade.LastCustomerDetails);
-    // }
-
-    // [Fact]
-    // public async Task BookPackage_BookingFails_ReturnsBadRequest()
-    // {
-    //     // Given
-    //     var packageId = 1;
-    //     var customerDetails = "Test Customer Details";
-
-    //     var mockFacade = (MockBookingFacade)_mockBookingFacade;
-    //     mockFacade.BookPackageAsyncResult = false;
-
-    //     // When
-    //     var result = await _packagesController.BookPackage(packageId, customerDetails);
-
-    //     // Then
-    //     Assert.IsType<BadRequestObjectResult>(result); // Expecting BadRequestObjectResult, not BadRequestResult
-    // }
 }

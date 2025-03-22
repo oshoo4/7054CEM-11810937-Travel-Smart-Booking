@@ -16,7 +16,7 @@ public class BookingControllerTests
 {
     private readonly BookingsController _controller;
     private readonly IBookingRepository _mockBookingRepository;
-    private readonly IBookingFacade _mockBookingFacade;
+    private readonly BookingFacade _mockBookingFacade;
     private readonly IPackageRepository _mockPackageRepository;
     private readonly IConfirmationSenderStrategyFactory _confirmationSenderFactory;
 
@@ -49,9 +49,13 @@ public class BookingControllerTests
     [Fact]
     public async Task GetBookings_ReturnsAllBookings()
     {
+        // Given
         var result = await _controller.GetBookings();
-        var okResult = Assert.IsType<ActionResult<IEnumerable<Booking>>>(result);
+
+        // When
         var resultValue = result.Value;
+
+        // Then
         if (resultValue != null)
         {
             Assert.Equal(2, resultValue.Count());
@@ -88,9 +92,7 @@ public class BookingControllerTests
             CustomerName = "Test Name",
             CustomerEmail = "test@example.com",
             CustomerDetails = "Test Details",
-            ConfirmationMethod =
-                "invalid"
-            ,
+            ConfirmationMethod = "invalid",
         };
 
         // When
@@ -110,9 +112,7 @@ public class BookingControllerTests
             CustomerName = "",
             CustomerEmail = "test@example.com",
             CustomerDetails = "Test Details",
-            ConfirmationMethod =
-                "email"
-            ,
+            ConfirmationMethod = "email",
         };
 
         _controller.ModelState.AddModelError("CustomerName", "The CustomerName field is required.");

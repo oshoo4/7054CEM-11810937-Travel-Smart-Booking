@@ -15,7 +15,7 @@ namespace TravelSmartBooking.Tests;
 
 public class BookingFacadeTests
 {
-    private readonly IBookingFacade _bookingFacade;
+    private readonly BookingFacade _bookingFacade;
     private readonly IPackageRepository _mockPackageRepository;
     private readonly IBookingRepository _mockBookingRepository;
     private readonly IConfirmationSenderStrategyFactory _confirmationSenderFactory;
@@ -33,7 +33,7 @@ public class BookingFacadeTests
 
         _mockPackageRepository = new MockPackageRepository(new PackageFactory());
         _mockBookingRepository = new MockBookingRepository();
-        _confirmationSenderFactory = new ConfirmationSenderStrategyFactory(serviceProvider); // Use the factory
+        _confirmationSenderFactory = new ConfirmationSenderStrategyFactory(serviceProvider);
         _bookingFacade = new BookingFacade(
             _mockPackageRepository,
             _mockBookingRepository,

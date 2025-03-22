@@ -102,19 +102,4 @@ public class PackagesController : ControllerBase
         await _repository.DeleteAsync(id);
         return NoContent();
     }
-
-    // TODO: DELETE THIS AFTER SUCCESSFUL ROUND OF TESTS
-    // [HttpPost("{id}/book")]
-    // public async Task<IActionResult> BookPackage(int id, [FromBody] string customerDetails)
-    // {
-    //     var success = await _bookingFacade.BookPackageAsync(id, customerDetails);
-    //     if (success)
-    //     {
-    //         return Ok();
-    //     }
-    //     else
-    //     {
-    //         return BadRequest("Booking failed.");
-    //     }
-    // }
 }

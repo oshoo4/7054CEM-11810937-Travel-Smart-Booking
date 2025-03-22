@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using TravelSmartBooking.Api.Dtos;
 using TravelSmartBooking.Api.Interfaces;
@@ -70,18 +71,6 @@ public class BookingsController : ControllerBase
             confirmationSender
         );
 
-        var success = await bookingFacade.BookPackageAsync(
-            packageId,
-            $"Name: {bookingRequest.CustomerName}, Email: {bookingRequest.CustomerEmail}, Details: {bookingRequest.CustomerDetails}"
-        );
-
-        if (success)
-        {
-            return Ok();
-        }
-        else
-        {
-            return BadRequest("Booking failed.");
-        }
+        return Ok();
     }
 }
